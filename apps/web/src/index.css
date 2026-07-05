@@ -1,0 +1,98 @@
+/* Verbatim design system from nexus_master_reference_1.html — colors, type,
+   and every named component class (.btn, .badge, .card, sidebar, ring
+   charts, etc). Kept as one block instead of broken into Tailwind utilities
+   so the app stays pixel-identical to the reference, not "inspired by" it. */
+@import './reference.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Interaction polish pass ─────────────────────────────────────────── */
+@keyframes nexus-spin { to { transform: rotate(360deg); } }
+@keyframes nexus-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.btn { transition: background 0.15s, box-shadow 0.15s, transform 0.08s; }
+.btn:not(:disabled):hover { filter: brightness(1.06); }
+.btn:not(:disabled):active { transform: scale(0.97); }
+.btn:disabled { cursor: not-allowed; }
+
+.card { transition: box-shadow 0.15s, border-color 0.15s; }
+
+.data-table tr { transition: background 0.12s; }
+.data-table tbody tr:hover, .data-table tr:not(:first-child):hover {
+  background: var(--surface);
+}
+
+a { transition: opacity 0.12s; }
+
+.phase-row, .subphase-row {
+  transition: background 0.15s, opacity 0.15s;
+}
+.phase-row[style*="cursor"]:hover, .subphase-row[style*="cursor"]:hover {
+  filter: brightness(0.98);
+}
+
+.vendor-card {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.vendor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.sidebar-item {
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--dark-text);
+}
+
+.form-input {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-fill);
+  outline: none;
+}
+
+/* Consistent empty-state styling wherever a table/list has nothing to show */
+.nexus-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.nexus-empty-state .icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+.nexus-empty-state .title {
+  font-family: var(--ff-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+.nexus-empty-state .subtitle {
+  font-family: var(--ff-body);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Page-level fade-in so route transitions don't feel abrupt */
+#root > div, .content-pad {
+  animation: nexus-fade-in 0.18s ease-out;
+}
