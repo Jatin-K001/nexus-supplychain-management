@@ -22,9 +22,9 @@ interface StockRequest {
   created_at: string;
 }
 
-function formatInr(amount: number) {
-  if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
-  return `₹${amount.toLocaleString('en-IN')}`;
+interface Project {
+  id: string;
+  status: string;
 }
 
 export function PmDashboard() {
@@ -40,7 +40,13 @@ export function PmDashboard() {
     queryFn: () => api.get('/api/stock-requests'),
   });
 
+  const { data: projects } = useQuery<Project[]>({
+    queryKey: ['projects'],
+    queryFn: () => api.get('/api/projects'),
+  });
+
   const pending = (requests ?? []).filter((r) => r.status === 'pending_pm_approval');
+  const activeProjects = (projects ?? []).filter((p) => p.status !== 'completed');
 
   const approve = async (id: string) => {
     await api.post(`/api/stock-requests/${id}/approve`);
@@ -61,14 +67,14 @@ export function PmDashboard() {
       </div>
 
       <div className="stat-cards">
-        <StatCard label="MATERIALS AT RISK" value={risk?.at_risk_material_count ?? '—'} tone="danger" sub="Forecasted shortfall before needed-by date" />
+        <StatCard label="ACTIVE PROJECTS" value={projects ? activeProjects.length : '—'} tone="accent" sub="Currently in progress" />
         <StatCard label="DELAYED PHASES" value={risk?.delayed_phase_count ?? '—'} tone="warning" sub="Across all active projects" />
         <StatCard label="AVG VENDOR RELIABILITY" value={risk?.avg_vendor_reliability ?? '—'} tone="success" sub="Live weighted score" />
         <StatCard
-          label="ESTIMATED DELAY COST"
-          value={risk ? formatInr(risk.estimated_delay_cost) : '—'}
-          tone="accent"
-          sub="Projected end vs. target, at daily cost"
+          label="PENDING APPROVALS"
+          value={requests ? pending.length : '—'}
+          tone={pending.length > 0 ? 'danger' : 'success'}
+          sub="Stock requests awaiting your decision"
         />
       </div>
 
